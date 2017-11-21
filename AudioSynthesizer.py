@@ -21,8 +21,8 @@ class AudioSynthesizer:
     """description of class"""
 
     def __init__(self, allowingLongTones):
+            self.keyboardBindings = KeyboardBindings("bindings.xml")
             self.allowLongTones = allowingLongTones
-            self.octave = 3
             self.mode = AudioSynthesizerMode.FREESTYLE
             self.audioSynthesizerState = AudioSynthesizerState.SLEEPING
             self.toneDuration = 1.5
@@ -45,34 +45,16 @@ class AudioSynthesizer:
                     file.close()
                     return
                 pass
-            if char in 'cC':
-                self.playMusicalNote(KeyboardBindings.C)
-
-            elif char in 'dD':
-                self.playMusicalNote(KeyboardBindings.D)
-
-            elif char in 'eE':
-                self.playMusicalNote(KeyboardBindings.E)
-
-            elif char in 'fF':
-                self.playMusicalNote(KeyboardBindings.F)
-
-            elif char in 'gG':
-                self.playMusicalNote(KeyboardBindings.G)
-
-            elif char in 'aA':
-                self.playMusicalNote(KeyboardBindings.A)
-
-            elif char in 'bB':
-                self.playMusicalNote(KeyboardBindings.B)
-            elif char in ' ':
+            if char in ' ':
                 sleep(1)
+            else:
+                self.playMusicalNote(self.keyboardBindings.getFrequency(char))
         self.state = ReadingFileModeState.STOPPED
         self.audioSynthesizerState = AudioSynthesizerState.SLEEPING
         file.close()
 
-    def playMusicalNote(self, note):
-        threading.Thread(target=self.playTone, args=(note, self.toneDuration)).start()
+    def playMusicalNote(self, frequency):
+        threading.Thread(target=self.playTone, args=(frequency, self.toneDuration)).start()
 
     def delayBeforeEachSameTone(self, note):
         debut = time()
@@ -80,13 +62,10 @@ class AudioSynthesizer:
             pass
         self.tonesState[note] = False
 
-    def playTone(self, note, duration, volume=1.0, sample_rate=22050):
+    def playTone(self, frequency, duration, volume=1.0, sample_rate=22050):
 
         self.audioSynthesizerState = AudioSynthesizerState.PLAYING
-
-        frequency = note * pow(2, self.octave)
         #print(str(frequency) + " Hz")
-
 
         # generate samples, note conversion to float32 array
         samples = (np.sin(2 * np.pi * np.arange(sample_rate * duration) * frequency / sample_rate)).astype(np.float32)

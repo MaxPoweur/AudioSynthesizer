@@ -1,9 +1,11 @@
-def truncate(f, n):
-    '''Truncates/pads a float f to n decimal places without rounding'''
-    s = '{}'.format(f)
-    if 'e' in s or 'E' in s:
-        return '{0:.{1}f}'.format(f, n)
-    i, p, d = s.partition('.')
-    return [i, (d+'0'*n)[:n]][0]
+from lxml import etree
+tree = etree.parse("bindings.xml")
+letters = list()
+notes = list()
+for letter in tree.xpath("/keyboardBindings/gamme/binding/letter"):
+    letters.append(letter.text)
+for note in tree.xpath("/keyboardBindings/gamme/binding/note"):
+    notes.append(note.text)
 
-print(truncate(1.58842, 0))
+bindings = dict(zip(letters, notes))
+print(bindings)

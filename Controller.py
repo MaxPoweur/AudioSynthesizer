@@ -19,14 +19,13 @@ class Controller:
         self.window = Tk()
         self.window.title("Synthetiseur audio")
         self.window.protocol("WM_DELETE_WINDOW", self.onClose)
-        self.model = AudioSynthesizer(allowingLongTones=False)
+        self.model = AudioSynthesizer(allowingLongTones=True)
 
         self.view = View(self.window, self)
         self.toSave = ""
         self.keyboardListener = threading.Thread(target=self.keyboardListener, args=())
         self.keyboardListener.daemon = True # makes the thread to get killed when the gui is closed
         self.keyboardListener.start()
-
         self.updatingGUIThread = threading.Thread(target=self.updateGUI, args=())
         self.updatingGUIThread.daemon = True
         self.updatingGUIThread.start()
@@ -198,35 +197,16 @@ class Controller:
             if canPlayTone:
                 if self.model.mode == AudioSynthesizerMode.RECORDING:
                     self.toSave += key.char
-                if key.char in 'cC':
-                    self.model.playMusicalNote(KeyboardBindings.C)
-
-                elif key.char in 'dD':
-                    self.model.playMusicalNote(KeyboardBindings.D)
-
-                elif key.char in 'eE':
-                    self.model.playMusicalNote(KeyboardBindings.E)
-
-                elif key.char in 'fF':
-                    self.model.playMusicalNote(KeyboardBindings.F)
-
-                elif key.char in 'gG':
-                        self.model.playMusicalNote(KeyboardBindings.G)
-
-                elif key.char in 'aA':
-                    self.model.playMusicalNote(KeyboardBindings.A)
-
-                elif key.char in 'bB':
-                    self.model.playMusicalNote(KeyboardBindings.B)
-        except AttributeError:
+                frequency = self.model.keyboardBindings.getFrequency(key.char)
+                if frequency != None:
+                    self.model.playMusicalNote(frequency)
+        except Exception:
            print('special key {0} pressed'.format(key))
 
-    def onRelease(self, key):
-        #if not self.model.allowLongTones :
-        #    self.model.state = AudioSynthesizerState.SLEEPING
+    def onRelease(self, key): # Callback to 'release' key event
         pass
 
-    def isCurrentActiveWindow(self):
+    def isCurrentActiveWindow(self): # Check if current active window is our audio synthesizer
         return "Synthetiseur audio" == GetWindowText(GetForegroundWindow())
 
 program = Controller()
