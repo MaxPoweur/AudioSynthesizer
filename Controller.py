@@ -198,7 +198,7 @@ class Controller:
                 if self.model.mode == AudioSynthesizerMode.RECORDING:
                     self.toSave += key.char
                 frequency = self.model.keyboardBindings.getFrequency(key.char)
-                if frequency != None:
+                if frequency != None and frequency!=-1:
                     self.model.playMusicalNote(frequency)
         except Exception:
            print('special key {0} pressed'.format(key))

@@ -25,3 +25,4 @@ class KeyboardBindings:
         for letter in self.bindings.keys():
             if char in letter:
                 return self.bindings.get(letter)
+        return -1

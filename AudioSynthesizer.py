@@ -48,7 +48,9 @@ class AudioSynthesizer:
             if char in ' ':
                 sleep(1)
             else:
-                self.playMusicalNote(self.keyboardBindings.getFrequency(char))
+                frequency = self.keyboardBindings.getFrequency(char)
+                if frequency!=-1:
+                    self.playMusicalNote(frequency)
         self.state = ReadingFileModeState.STOPPED
         self.audioSynthesizerState = AudioSynthesizerState.SLEEPING
         file.close()
